@@ -1,0 +1,37 @@
+---
+- sudo: yes
+  hosts: all
+  tasks:
+    - name: ensure base packages are installed
+      yum: pkg={{ item }} state=installed
+      with_items:
+        - "httpie"
+        - "wget"
+        - "curl"
+        - "mlocate"
+        - "bind-utils"
+        - "readline-devel"
+        - "pcre-devel"
+        - "openssl-devel"
+
+    - name: "ensure dummy-api user exists"
+      user: name="dummy-api" shell="/bin/bash"
+
+    - name: "ensure init script is in place"
+      copy: src="../etc/dummy-api.init" dest="/etc/init.d/dummy-api" mode=555
+
+    - name: directories
+      file: path="{{ item }}" state=directory
+      with_items:
+        - "/srv/dummy-api"
+        - "/srv/dummy-api/www"
+        - "/srv/dummy-api/conf"
+        - "/var/log/dummy-api"
+
+    # wget http://openresty.org/download/ngx_openresty-1.7.10.1.tar.gz
+    # tar -xvzf ngx_openresty-1.7.10.1.tar.gz
+    # ./configure --with-pcre-jit --with-luajit --error-log-path=/var/log/api/error.log --http-log-path=/var/log/api/access.log --prefix=/srv/dummy-api/openresty/
+
+    - name: "ensure dummy-api service is running"
+      service: name="dummy-api" state=running enabled=yes
+

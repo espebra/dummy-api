@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# chkconfig: 2345 55 25
+#
+#       /etc/rc.d/init.d/
+#
+
+export PATH="$PATH:/srv/dummy-api/openresty/nginx/sbin"
+export LD_LIBRARY_PATH="/srv/dummy-api/openresty/luajit/lib/:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="/srv/dummy-api/openresty/lualib/:$LD_LIBRARY_PATH"
+export LUA_PATH="/srv/dummy-api/lib/?.lua;/srv/api/?.lua"
+
+start() {
+        echo "Starting"
+        nohup nginx -p /srv/api/ -c /srv/dummy-api/conf/nginx.conf > /var/log/dummy-api/nohub.log
+
+        # To get the timers started
+        GET http://localhost/ 2>&1 > /dev/null
+        return
+}
+
+stop() {
+        echo "Shutting down"
+        killall -u dummy-api nginx
+        return
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        pgrep nginx -u dummy-api
+        if [ $? -eq 0 ]; then
+            exit 0
+        else
+            exit 3
+        fi
+        ;;
+    restart)
+        stop
+        sleep 0.3
+        start
+        ;;
+    reload)
+
+        [ -f /var/lock/subsys/ ] && restart || :
+        ;;
+    probe)
+
+        ;;
+    *)
+        echo "Usage:  {start|stop|status|reload|restart[|probe]"
+        exit 1
+        ;;
+esac
+exit $?
