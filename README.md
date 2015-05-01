@@ -23,6 +23,32 @@ The following request headers and query parameters will make an impact on the re
 
     response-status = {int}          Set the response status
     content-length                   Set the content-length, otherwise chunked encoding is used
+    help                             Show help text
+
+## Examples
+
+    GET http://somehost/someurl?max-age=2&content-length&header-delay=1
+    
+    HTTP/1.1 200 OK
+    Cache-control: max-age=2
+    Connection: close
+    Content-Type: application/json
+    Content-length: 106
+    Date: Fri, 01 May 2015 19:25:11 GMT
+    Server: Dummy API
+    
+    {
+        "content-length": true,
+        "header-delay": 1,
+        "host": "somehost",
+        "max-age": 2,
+        "method": "GET",
+        "uri": "/someurl"
+    }
+
+## Help
+
+    GET http://somehost/?help
 
 ## Installation
 
