@@ -25,7 +25,11 @@
     - name: "ensure init script is in place"
       copy: src="../etc/dummy-api.init" dest="/etc/init.d/dummy-api" mode=555
     - name: "ensure configuration file is in place"
-      copy: src="../etc/nginx.conf" dest="/srv/dummy-api/conf/nginx.conf" mode=555
+      copy: src="../etc/nginx.conf" dest="/srv/dummy-api/conf/nginx.conf" mode=444
+
+    - name: "ensure app file is in place"
+      copy: src="../dummy-api.lua" dest="/srv/dummy-api/dummy-api.lua" mode=444
+
 
     - name: directories
       file: path="{{ item }}" state=directory
