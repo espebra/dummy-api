@@ -1,33 +1,36 @@
-Dummy API
-#########
+# Dummy API
 
-Headers and query parameters
-============================
+## Headers and query parameters
 
 The following request headers and query parameters will make an impact on the response.
 
-Delay
------
-header-delay = {float}           Delay to first header byte
-body-delay = {float}             Delay to first body byte
+### Delay
 
-Cache-control
--------------
-max-age = {int}                  Set the response max-age value
-s-maxage = {int}                 Set the response s-maxage value
-must-revalidate                  Set must-revalidate
-public                           Set public
-private                          Set private
-no-store                         Set no-store
-no-cache                         Set no-cache
+::
 
-Misc
-----
-response-status = {int}          Set the response status
-content-length                   Set the content-length, otherwise chunked encoding is used
+    header-delay = {float}           Delay to first header byte
+    body-delay = {float}             Delay to first body byte
 
-Installation
-============
+### Cache-control
+
+::
+
+    max-age = {int}                  Set the response max-age value
+    s-maxage = {int}                 Set the response s-maxage value
+    must-revalidate                  Set must-revalidate
+    public                           Set public
+    private                          Set private
+    no-store                         Set no-store
+    no-cache                         Set no-cache
+
+### Misc
+
+::
+
+    response-status = {int}          Set the response status
+    content-length                   Set the content-length, otherwise chunked encoding is used
+
+## Installation
 
 ::
 
