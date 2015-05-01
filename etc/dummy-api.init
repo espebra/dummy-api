@@ -8,11 +8,11 @@
 export PATH="$PATH:/srv/dummy-api/openresty/nginx/sbin"
 export LD_LIBRARY_PATH="/srv/dummy-api/openresty/luajit/lib/:$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="/srv/dummy-api/openresty/lualib/:$LD_LIBRARY_PATH"
-export LUA_PATH="/srv/dummy-api/lib/?.lua;/srv/api/?.lua"
+export LUA_PATH="/srv/dummy-api/lib/?.lua;/srv/dummy-api/?.lua"
 
 start() {
         echo "Starting"
-        nohup nginx -p /srv/api/ -c /srv/dummy-api/conf/nginx.conf > /var/log/dummy-api/nohub.log
+        nohup nginx -p /srv/dummy-api/ -c /srv/dummy-api/conf/nginx.conf > /var/log/dummy-api/nohub.log
 
         # To get the timers started
         GET http://localhost/ 2>&1 > /dev/null
