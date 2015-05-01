@@ -1,22 +1,29 @@
 local ngx = require "ngx"
 local cjson = require "cjson"
 
+function get_property(key)
+    for header, val in pairs(ngx.req.get_headers()) do
+        if header == key then
+            return val
+        end
+    end
+    for arg, val in pairs(ngx.req.get_uri_args()) do
+        if arg == key then
+            return val
+        end
+    end
+    return nil
+end
+
 -- Setting defaults
 local response_status = 200
 local content_length = nil
 
 -- Delay
-local response_delay = 0
 local header_delay = 0
 local body_delay = 0
 
--- Cache control
-local max_age = nil
-local s_maxage = nil
-local must_revalidate = nil
-local public = nil
-local private = nil
-
+-- Misc
 local help = nil
 
 -- Output structure
@@ -24,52 +31,97 @@ out = {}
 local cache_control = {}
 
 -- Input parsing
-for arg, val in pairs(ngx.req.get_uri_args()) do
-    if type(val) ~= "table" then
-        if arg == "response-delay" then
-            response_delay = tonumber(val)
-            out[arg] = val
-        elseif arg == "header-delay" then
-            header_delay = tonumber(val)
-            out[arg] = val
-        elseif arg == "body-delay" then
-            body_delay = tonumber(val)
-            out[arg] = val
-        elseif arg == "response-status" then
-            if tonumber(val) >= 100 and tonumber(val) < 600 then
-                response_status = tonumber(val)
-                out[arg] = val
-            end
-        elseif arg == "content-length" then
-            content_length = true
-            out[arg] = val
-        elseif arg == "max-age" then
-            max_age = tonumber(val)
-            table.insert(cache_control, "max-age=" .. max_age)
-            out[arg] = val
-        elseif arg == "s-maxage" then
-            s_maxage = tonumber(val)
-            table.insert(cache_control, "s-maxage=" .. s_maxage)
-            out[arg] = val
-        elseif arg == "must-revalidate" then
-            table.insert(cache_control, arg)
-            out[arg] = true
-        elseif arg == "public" then
-            table.insert(cache_control, arg)
-            out[arg] = true
-        elseif arg == "private" then
-            table.insert(cache_control, arg)
-            out[arg] = true
-        elseif arg == "help" then
-            help = true
-        end
+arg = "header-delay"
+val = get_property(arg)
+if val then
+    header_delay = tonumber(val)
+    out[arg] = header_delay
+end
+
+arg = "body-delay"
+val = get_property(arg)
+if val then
+    body_delay = tonumber(val)
+    out[arg] = body_delay
+end
+
+arg = "response-status"
+val = get_property(arg)
+if val then
+    if tonumber(val) >= 100 and tonumber(val) < 600 then
+        response_status = math.floor(tonumber(val))
+        out[arg] = response_status
     end
 end
 
-for header, val in pairs(ngx.req.get_headers()) do
-    if (header == "host") then
-        out[header] = val
-    end
+arg = "content-length"
+val = get_property(arg)
+if val then
+    content_length = true
+    out[arg] = true
+end
+
+arg = "max-age"
+val = get_property(arg)
+if val then
+    max_age = math.abs(math.floor(tonumber(val)))
+    table.insert(cache_control, arg .. "=" .. max_age)
+    out[arg] = max_age
+end
+
+arg = "s-maxage"
+val = get_property(arg)
+if val then
+    s_maxage = math.abs(math.floor(tonumber(val)))
+    table.insert(cache_control, arg .. "=" .. s_maxage)
+    out[arg] = s_maxage
+end
+
+arg = "must-revalidate"
+val = get_property(arg)
+if val then
+    table.insert(cache_control, arg)
+    out[arg] = true
+end
+
+arg = "public"
+val = get_property(arg)
+if val then
+    table.insert(cache_control, arg)
+    out[arg] = true
+end
+
+arg = "private"
+val = get_property(arg)
+if val then
+    table.insert(cache_control, arg)
+    out[arg] = true
+end
+
+arg = "no-cache"
+val = get_property(arg)
+if val then
+    table.insert(cache_control, arg)
+    out[arg] = true
+end
+
+arg = "no-store"
+val = get_property(arg)
+if val then
+    table.insert(cache_control, arg)
+    out[arg] = true
+end
+
+arg = "help"
+val = get_property(arg)
+if val then
+    help = true
+end
+
+arg = "host"
+val = get_property(arg)
+if val then
+    out[arg] = val
 end
 
 out["method"] = ngx.req.get_method()
@@ -77,40 +129,39 @@ out["uri"] = ngx.var.uri
 
 -- Print help text
 if help then
-    ngx.say("Test API")
-    ngx.say("========")
+    ngx.say("Dummy API")
+    ngx.say("=========")
+    ngx.say("")
+    ngx.say("The following request headers and query parameters will make an")
+    ngx.say("impact on the response.")
     ngx.say("")
     ngx.say("Delay")
     ngx.say("-----")
-    ngx.say("response-delay = {number}        Delay to first byte")
-    ngx.say("header-delay = {number}          Delay to first header byte")
-    ngx.say("body-delay = {number}            Delay to first body byte")
+    ngx.say("header-delay = {float}           Delay to first header byte")
+    ngx.say("body-delay = {float}             Delay to first body byte")
     ngx.say("")
     ngx.say("Cache-control")
     ngx.say("-------------")
-    ngx.say("max-age = {number}               Set the response max-age value")
-    ngx.say("s-maxage = {number}              Set the response s-maxage value")
+    ngx.say("max-age = {int}                  Set the response max-age value")
+    ngx.say("s-maxage = {int}                 Set the response s-maxage value")
     ngx.say("must-revalidate                  Set must-revalidate")
     ngx.say("public                           Set public")
     ngx.say("private                          Set private")
+    ngx.say("no-store                         Set no-store")
+    ngx.say("no-cache                         Set no-cache")
     ngx.say("")
     ngx.say("Misc")
     ngx.say("----")
-    ngx.say("response-status = {number}       Set the response status")
-    ngx.say("content-length                   Set the content-length")
+    ngx.say("response-status = {int}          Set the response status")
+    ngx.say("content-length                   Set the content-length, otherwise chunked encoding is used")
     ngx.exit(200)
-end
-
--- Time to  byte
-if response_delay then
-    ngx.sleep(response_delay)
 end
 
 -- Response status
 ngx.status = response_status
 
 -- Headers
-ngx.header["Server"] = "API"
+ngx.header["Server"] = "Dummy API"
 ngx.header["Content-Type"] = "application/json"
 
 if #cache_control > 0 then
