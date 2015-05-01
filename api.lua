@@ -25,9 +25,7 @@ local cache_control = {}
 
 -- Input parsing
 for arg, val in pairs(ngx.req.get_uri_args()) do
-    if type(val) == "table" then
-        ngx.say(arg, ": ", table.concat(val, ", "))
-    else
+    if type(val) ~= "table" then
         if arg == "response-delay" then
             response_delay = tonumber(val)
             out[arg] = val
