@@ -10,6 +10,11 @@
         - "curl"
         - "mlocate"
         - "bind-utils"
+        - "psmisc"
+        - "perl-libwww-perl"
+        - "lsof"
+        - "net-tools"
+        - "gcc"
         - "readline-devel"
         - "pcre-devel"
         - "openssl-devel"
@@ -19,6 +24,8 @@
 
     - name: "ensure init script is in place"
       copy: src="../etc/dummy-api.init" dest="/etc/init.d/dummy-api" mode=555
+    - name: "ensure configuration file is in place"
+      copy: src="../etc/nginx.conf" dest="/srv/dummy-api/conf/nginx.conf" mode=555
 
     - name: directories
       file: path="{{ item }}" state=directory
@@ -30,7 +37,7 @@
 
     # wget http://openresty.org/download/ngx_openresty-1.7.10.1.tar.gz
     # tar -xvzf ngx_openresty-1.7.10.1.tar.gz
-    # ./configure --with-pcre-jit --with-luajit --error-log-path=/var/log/api/error.log --http-log-path=/var/log/api/access.log --prefix=/srv/dummy-api/openresty/
+    # ./configure --with-pcre-jit --with-luajit --error-log-path=/var/log/dummy-api/error.log --http-log-path=/var/log/dummy-api/access.log --prefix=/srv/dummy-api/openresty/
 
     - name: "ensure dummy-api service is running"
       service: name="dummy-api" state=running enabled=yes
