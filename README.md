@@ -6,14 +6,10 @@ The following request headers and query parameters will make an impact on the re
 
 ### Delay
 
-::
-
     header-delay = {float}           Delay to first header byte
     body-delay = {float}             Delay to first body byte
 
 ### Cache-control
-
-::
 
     max-age = {int}                  Set the response max-age value
     s-maxage = {int}                 Set the response s-maxage value
@@ -25,14 +21,10 @@ The following request headers and query parameters will make an impact on the re
 
 ### Misc
 
-::
-
     response-status = {int}          Set the response status
     content-length                   Set the content-length, otherwise chunked encoding is used
 
 ## Installation
-
-::
 
     wget http://openresty.org/download/ngx_openresty-1.7.10.1.tar.gz
     tar -xvzf ngx_openresty-1.7.10.1
