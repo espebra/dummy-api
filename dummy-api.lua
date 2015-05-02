@@ -28,7 +28,6 @@ end
 -- Setting defaults
 local response_status = 200
 local content_length = nil
-local random_body = nil
 
 -- Delay
 local header_delay = 0
@@ -48,6 +47,7 @@ if val then
     val = tonumber(val)
     if val then
         out[arg] = val
+        header_delay = val
     end
 end
 
@@ -57,6 +57,7 @@ if val then
     val = tonumber(val)
     if val then
         out[arg] = val
+        body_delay = val
     end
 end
 
@@ -68,6 +69,7 @@ if val then
         if val >= 100 and val < 600 then
             val = math.floor(val)
             out[arg] = val
+            response_status = val
         end
     end
 end
