@@ -27,8 +27,11 @@
     - name: "ensure configuration file is in place"
       copy: src="../etc/nginx.conf" dest="/srv/dummy-api/conf/nginx.conf" mode=444
 
-    - name: "ensure app file is in place"
-      copy: src="../dummy-api.lua" dest="/srv/dummy-api/dummy-api.lua" mode=444
+    - name: "ensure app files are in place"
+      copy: src="../{{ item }}" dest="/srv/dummy-api/{{ item }}" mode=444
+      with_items:
+        - "dummy-api.lua"
+        - "random.lua"
 
 
     - name: directories

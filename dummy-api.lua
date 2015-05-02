@@ -1,5 +1,6 @@
 local ngx = require "ngx"
 local cjson = require "cjson"
+local random = require "random"
 
 function get_property(key)
     for header, val in pairs(ngx.req.get_headers()) do
@@ -149,13 +150,15 @@ if val then
     val = tonumber(val)
     if val then
         length = math.abs(math.floor(val))
-        out[arg] = generate_string(length)
+        out[arg] = random.token(length)
     end
 end
 
 arg = "predictable-content"
 val = get_property(arg)
 if val then
+
+    -- Generate some seed which usually is unique per URL
     local seed = ngx.req.get_method() .. ngx.var.uri
     if host then
         seed = seed .. host
@@ -164,7 +167,7 @@ if val then
     val = tonumber(val)
     if val then
         length = math.abs(math.floor(val))
-        out[arg] = generate_string(length)
+        out[arg] = random.token(length)
     end
 end
 
