@@ -15,9 +15,19 @@ function get_property(key)
     return nil
 end
 
+function generate_string(l)
+    if l < 1 then return nil end -- Check for l < 1
+    local s = "" -- Start string
+    for i = 1, l do
+        s = s .. string.char(math.random(32, 126)) -- Generate random number from 32 to 126, turn it into character and add to string
+    end
+    return s -- Return string
+end
+
 -- Setting defaults
 local response_status = 200
 local content_length = nil
+local random_body = nil
 
 -- Delay
 local header_delay = 0
@@ -34,23 +44,30 @@ local cache_control = {}
 arg = "header-delay"
 val = get_property(arg)
 if val then
-    header_delay = tonumber(val)
-    out[arg] = header_delay
+    val = tonumber(val)
+    if val then
+        out[arg] = val
+    end
 end
 
 arg = "body-delay"
 val = get_property(arg)
 if val then
-    body_delay = tonumber(val)
-    out[arg] = body_delay
+    val = tonumber(val)
+    if val then
+        out[arg] = val
+    end
 end
 
 arg = "response-status"
 val = get_property(arg)
 if val then
-    if tonumber(val) >= 100 and tonumber(val) < 600 then
-        response_status = math.floor(tonumber(val))
-        out[arg] = response_status
+    val = tonumber(val)
+    if val then
+        if val >= 100 and val < 600 then
+            val = math.floor(val)
+            out[arg] = val
+        end
     end
 end
 
@@ -64,17 +81,23 @@ end
 arg = "max-age"
 val = get_property(arg)
 if val then
-    max_age = math.abs(math.floor(tonumber(val)))
-    table.insert(cache_control, arg .. "=" .. max_age)
-    out[arg] = max_age
+    val = tonumber(val)
+    if val then
+        val = math.abs(math.floor(val))
+        table.insert(cache_control, arg .. "=" .. val)
+        out[arg] = val
+    end
 end
 
 arg = "s-maxage"
 val = get_property(arg)
 if val then
-    s_maxage = math.abs(math.floor(tonumber(val)))
-    table.insert(cache_control, arg .. "=" .. s_maxage)
-    out[arg] = s_maxage
+    val = tonumber(val)
+    if val then
+        val = math.abs(math.floor(val))
+        table.insert(cache_control, arg .. "=" .. val)
+        out[arg] = val
+    end
 end
 
 arg = "must-revalidate"
@@ -112,6 +135,39 @@ if val then
     out[arg] = true
 end
 
+arg = "no-transform"
+val = get_property(arg)
+if val then
+    table.insert(cache_control, arg)
+    out[arg] = true
+end
+
+arg = "random-content"
+val = get_property(arg)
+if val then
+    math.randomseed(os.time())
+    val = tonumber(val)
+    if val then
+        length = math.abs(math.floor(val))
+        out[arg] = generate_string(length)
+    end
+end
+
+arg = "predictable-content"
+val = get_property(arg)
+if val then
+    local seed = ngx.req.get_method() .. ngx.var.uri
+    if host then
+        seed = seed .. host
+    end
+    math.randomseed(#seed)
+    val = tonumber(val)
+    if val then
+        length = math.abs(math.floor(val))
+        out[arg] = generate_string(length)
+    end
+end
+
 arg = "help"
 val = get_property(arg)
 if val then
@@ -132,8 +188,7 @@ if help then
     ngx.say("Dummy API")
     ngx.say("=========")
     ngx.say("")
-    ngx.say("The following request headers and query parameters will make an")
-    ngx.say("impact on the response.")
+    ngx.say("The following request headers and query parameters will make an impact on the response.")
     ngx.say("")
     ngx.say("Delay")
     ngx.say("-----")
@@ -149,11 +204,14 @@ if help then
     ngx.say("private                          Set private")
     ngx.say("no-store                         Set no-store")
     ngx.say("no-cache                         Set no-cache")
+    ngx.say("no-transform                     Set no-transform")
     ngx.say("")
     ngx.say("Misc")
     ngx.say("----")
+    ngx.say("content-length                   Set the content-length header, otherwise chunked transfer encoding is used")
+    ngx.say("random-content = {int}           Add random string to the response of given length")
+    ngx.say("predictable-content = {int}      Add predictable string to the response of given length")
     ngx.say("response-status = {int}          Set the response status")
-    ngx.say("content-length                   Set the content-length, otherwise chunked encoding is used")
     ngx.exit(200)
 end
 

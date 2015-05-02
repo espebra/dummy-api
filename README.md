@@ -1,5 +1,9 @@
 # Dummy API
 
+Dummy API is an API which behaviour is decided by the request headers and
+query parameters. The purpose is to use it for testing and benchmarking API
+gateways such as the Varnish API Engine.
+
 ## Headers and query parameters
 
 The following request headers and query parameters will make an impact on the response.
@@ -18,11 +22,14 @@ The following request headers and query parameters will make an impact on the re
     private                          Set private
     no-store                         Set no-store
     no-cache                         Set no-cache
+    no-transform                     Set no-transform
 
 ### Misc
 
+    content-length                   Set the content-length header, otherwise chunked transfer encoding is used
+    random-content = {int}           Add random string to the response of given length
+    predictable-content = {int}      Add predictable string to the response of given length
     response-status = {int}          Set the response status
-    content-length                   Set the content-length, otherwise chunked encoding is used
     help                             Show help text
 
 ## Examples
@@ -46,16 +53,20 @@ The following request headers and query parameters will make an impact on the re
         "uri": "/someurl"
     }
 
-## Help
+## Getting help
 
     GET http://somehost/?help
 
 ## Installation
 
     wget http://openresty.org/download/ngx_openresty-1.7.10.1.tar.gz
-    tar -xvzf ngx_openresty-1.7.10.1
+    tar -xvzf ngx_openresty-1.7.10.1.tar.gz
     cd ngx_openresty-1.7.10.1
-    ./configure --with-pcre-jit --with-luajit --error-log-path=/var/log/api/error.log --http-log-path=/var/log/api/access.log --prefix=/srv/dummy-api/openresty/
+    ./configure --with-pcre-jit --with-luajit --error-log-path=/var/log/dummy-api/error.log --http-log-path=/var/log/dummy-api/access.log --prefix=/srv/dummy-api/openresty/
     gmake
     gmake install 
+    mkdir -p /srv/dummy-api/conf
+    cp etc/dummy-api.init /etc/init.d/dummy-api
+    cp etc/nginx.conf /srv/dummy-api/conf/
+    service dummy-api start
 
