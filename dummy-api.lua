@@ -39,6 +39,7 @@ local help = nil
 -- Output structure
 out = {}
 local cache_control = {}
+ngx.header["Server"] = "Dummy API"
 
 -- Input parsing
 arg = "header-delay"
@@ -224,7 +225,6 @@ end
 ngx.status = response_status
 
 -- Headers
-ngx.header["Server"] = "Dummy API"
 ngx.header["Content-Type"] = "application/json"
 
 if #cache_control > 0 then
