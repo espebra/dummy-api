@@ -172,8 +172,10 @@ if val then
     math.randomseed(os.time())
     val = tonumber(val)
     if val then
-        length = math.abs(math.floor(val))
-        out[arg] = random.token(length)
+        if val > 0 and val <= 10000000 then
+            length = math.abs(math.floor(val))
+            out[arg] = random.token(length)
+        end
     end
 end
 
@@ -189,8 +191,10 @@ if val then
     math.randomseed(#seed)
     val = tonumber(val)
     if val then
-        length = math.abs(math.floor(val))
-        out[arg] = random.token(length)
+        if val > 0 and val <= 10000000 then
+            length = math.abs(math.floor(val))
+            out[arg] = random.token(length)
+        end
     end
 end
 
