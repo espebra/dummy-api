@@ -263,16 +263,20 @@ end
 
 -- Time to first header
 if header_delay then
-    ngx.flush()
-    ngx.sleep(header_delay)
+    if header_delay > 0 then
+        ngx.flush()
+        ngx.sleep(header_delay)
+    end
 end
 
 ok, err = ngx.send_headers()
 
 -- Time to first body byte
 if body_delay then
-    ngx.flush()
-    ngx.sleep(body_delay)
+    if body_delay > 0 then
+        ngx.flush()
+        ngx.sleep(body_delay)
+    end
 end
 
 -- Print body
