@@ -58,6 +58,9 @@ out = {}
 local cache_control = {}
 ngx.header["Server"] = "Dummy API"
 
+out['request-headers'] = ngx.req.get_headers()
+out['request-parameters'] = ngx.req.get_uri_args()
+
 -- Input parsing
 arg = "header-delay"
 val = get_property(arg)
