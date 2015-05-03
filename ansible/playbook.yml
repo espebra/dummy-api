@@ -24,15 +24,18 @@
 
     - name: "ensure init script is in place"
       copy: src="../etc/dummy-api.init" dest="/etc/init.d/dummy-api" mode=555
-    - name: "ensure configuration file is in place"
+
+    - name: "ensure nginx configuration file is in place"
       copy: src="../etc/nginx.conf" dest="/srv/dummy-api/conf/nginx.conf" mode=444
+
+    - name: "ensure logrotate configuration file is in place"
+      copy: src="../etc/dummy-api.logrotate" dest="/etc/logrotate.d/dummy-api" mode=444
 
     - name: "ensure app files are in place"
       copy: src="../{{ item }}" dest="/srv/dummy-api/{{ item }}" mode=444
       with_items:
         - "dummy-api.lua"
         - "random.lua"
-
 
     - name: directories
       file: path="{{ item }}" state=directory

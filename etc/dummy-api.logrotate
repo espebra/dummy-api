@@ -1,0 +1,8 @@
+/var/log/dummy-api/*.log {
+    daily
+    rotate 30
+    compress
+    delaycompress
+    copytruncate
+    create 0640 root root
+}
