@@ -42,6 +42,22 @@ function get_property(key)
     return nil
 end
 
+function get_seed()
+    local counters = ngx.shared.counters
+    local seed = nil
+    if not counters then
+        return false
+    end
+
+    local seed, flags = counters:incr("seed", 1)
+    if not seed then
+        succ, err, forcible = counters:set("seed", 1)
+        seed = 1
+    end
+
+    return seed
+end
+
 -- Setting defaults
 local response_status = 200
 local content_length = nil
@@ -169,10 +185,11 @@ end
 arg = "random-content"
 val = get_property(arg)
 if val then
-    math.randomseed(os.time())
     val = tonumber(val)
     if val then
         if val > 0 and val <= 10000000 then
+            local seed = get_seed()
+            math.randomseed(seed)
             length = math.abs(math.floor(val))
             out[arg] = random.token(length)
         end
