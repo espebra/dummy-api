@@ -28,7 +28,7 @@ local ngx = require "ngx"
 local cjson = require "cjson"
 local random = require "random"
 
-function get_property(key)
+local function get_property(key)
     local key = key:lower()
     for header, val in pairs(ngx.req.get_headers()) do
         header = header:lower()
@@ -45,7 +45,7 @@ function get_property(key)
     return nil
 end
 
-function get_seed()
+local function get_seed()
     local counters = ngx.shared.counters
     local seed = nil
     if not counters then
