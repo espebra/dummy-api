@@ -5,10 +5,6 @@
     - name: ensure base packages are installed
       yum: pkg={{ item }} state=installed
       with_items:
-        - "httpie"
-        - "wget"
-        - "curl"
-        - "mlocate"
         - "bind-utils"
         - "psmisc"
         - "perl-libwww-perl"
