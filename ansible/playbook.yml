@@ -15,6 +15,14 @@
         - "pcre-devel"
         - "openssl-devel"
 
+    - name: directories
+      file: path="{{ item }}" state=directory
+      with_items:
+        - "/srv/dummy-api"
+        - "/srv/dummy-api/www"
+        - "/srv/dummy-api/conf"
+        - "/var/log/dummy-api"
+
     - name: "ensure dummy-api user exists"
       user: name="dummy-api" shell="/bin/bash"
 
@@ -32,14 +40,6 @@
       with_items:
         - "dummy-api.lua"
         - "random.lua"
-
-    - name: directories
-      file: path="{{ item }}" state=directory
-      with_items:
-        - "/srv/dummy-api"
-        - "/srv/dummy-api/www"
-        - "/srv/dummy-api/conf"
-        - "/var/log/dummy-api"
 
     # wget http://openresty.org/download/ngx_openresty-1.7.10.1.tar.gz
     # tar -xvzf ngx_openresty-1.7.10.1.tar.gz
