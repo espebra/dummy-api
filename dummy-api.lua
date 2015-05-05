@@ -29,12 +29,15 @@ local cjson = require "cjson"
 local random = require "random"
 
 function get_property(key)
+    local key = key:lower()
     for header, val in pairs(ngx.req.get_headers()) do
+        header = header:lower()
         if header == key then
             return val
         end
     end
     for arg, val in pairs(ngx.req.get_uri_args()) do
+        arg = arg:lower()
         if arg == key then
             return val
         end
@@ -70,7 +73,7 @@ local body_delay = 0
 local help = nil
 
 -- Output structure
-out = {}
+local out = {}
 local cache_control = {}
 ngx.header["Server"] = "Dummy API"
 
@@ -78,8 +81,8 @@ out['request-headers'] = ngx.req.get_headers()
 out['request-parameters'] = ngx.req.get_uri_args()
 
 -- Input parsing
-arg = "header-delay"
-val = get_property(arg)
+local arg = "header-delay"
+local val = get_property(arg)
 if val then
     val = tonumber(val)
     if val then
@@ -88,8 +91,8 @@ if val then
     end
 end
 
-arg = "body-delay"
-val = get_property(arg)
+local arg = "body-delay"
+local val = get_property(arg)
 if val then
     val = tonumber(val)
     if val then
@@ -98,8 +101,8 @@ if val then
     end
 end
 
-arg = "response-status"
-val = get_property(arg)
+local arg = "response-status"
+local val = get_property(arg)
 if val then
     val = tonumber(val)
     if val then
@@ -111,15 +114,15 @@ if val then
     end
 end
 
-arg = "content-length"
-val = get_property(arg)
+local arg = "content-length"
+local val = get_property(arg)
 if val then
     content_length = true
     out[arg] = true
 end
 
-arg = "max-age"
-val = get_property(arg)
+local arg = "max-age"
+local val = get_property(arg)
 if val then
     val = tonumber(val)
     if val then
@@ -129,8 +132,8 @@ if val then
     end
 end
 
-arg = "s-maxage"
-val = get_property(arg)
+local arg = "s-maxage"
+local val = get_property(arg)
 if val then
     val = tonumber(val)
     if val then
@@ -140,50 +143,50 @@ if val then
     end
 end
 
-arg = "must-revalidate"
-val = get_property(arg)
+local arg = "must-revalidate"
+local val = get_property(arg)
 if val then
     table.insert(cache_control, arg)
     out[arg] = true
 end
 
-arg = "public"
-val = get_property(arg)
+local arg = "public"
+local val = get_property(arg)
 if val then
     table.insert(cache_control, arg)
     out[arg] = true
 end
 
-arg = "private"
-val = get_property(arg)
+local arg = "private"
+local val = get_property(arg)
 if val then
     table.insert(cache_control, arg)
     out[arg] = true
 end
 
-arg = "no-cache"
-val = get_property(arg)
+local arg = "no-cache"
+local val = get_property(arg)
 if val then
     table.insert(cache_control, arg)
     out[arg] = true
 end
 
-arg = "no-store"
-val = get_property(arg)
+local arg = "no-store"
+local val = get_property(arg)
 if val then
     table.insert(cache_control, arg)
     out[arg] = true
 end
 
-arg = "no-transform"
-val = get_property(arg)
+local arg = "no-transform"
+local val = get_property(arg)
 if val then
     table.insert(cache_control, arg)
     out[arg] = true
 end
 
-arg = "random-content"
-val = get_property(arg)
+local arg = "random-content"
+local val = get_property(arg)
 if val then
     val = tonumber(val)
     if val then
@@ -196,10 +199,9 @@ if val then
     end
 end
 
-arg = "predictable-content"
-val = get_property(arg)
+local arg = "predictable-content"
+local val = get_property(arg)
 if val then
-
     -- Generate some seed which usually is unique per URL
     local seed = ngx.req.get_method() .. ngx.var.uri
     if host then
@@ -215,14 +217,14 @@ if val then
     end
 end
 
-arg = "help"
-val = get_property(arg)
+local arg = "help"
+local val = get_property(arg)
 if val then
     help = true
 end
 
-arg = "host"
-val = get_property(arg)
+local arg = "host"
+local val = get_property(arg)
 if val then
     out[arg] = val
 end
