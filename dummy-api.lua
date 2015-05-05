@@ -234,33 +234,34 @@ out["uri"] = ngx.var.uri
 
 -- Print help text
 if help then
-    ngx.say("Dummy API")
-    ngx.say("=========")
-    ngx.say("")
-    ngx.say("The following request headers and query parameters will make an impact on the response.")
-    ngx.say("")
-    ngx.say("Delay")
-    ngx.say("-----")
-    ngx.say("header-delay = {float}           Delay to first header byte")
-    ngx.say("body-delay = {float}             Delay to first body byte")
-    ngx.say("")
-    ngx.say("Cache-control")
-    ngx.say("-------------")
-    ngx.say("max-age = {int}                  Set the response max-age value")
-    ngx.say("s-maxage = {int}                 Set the response s-maxage value")
-    ngx.say("must-revalidate                  Set must-revalidate")
-    ngx.say("public                           Set public")
-    ngx.say("private                          Set private")
-    ngx.say("no-store                         Set no-store")
-    ngx.say("no-cache                         Set no-cache")
-    ngx.say("no-transform                     Set no-transform")
-    ngx.say("")
-    ngx.say("Misc")
-    ngx.say("----")
-    ngx.say("content-length                   Set the content-length header, otherwise chunked transfer encoding is used")
-    ngx.say("random-content = {int}           Add random string to the response of given length")
-    ngx.say("predictable-content = {int}      Add predictable string to the response of given length")
-    ngx.say("response-status = {int}          Set the response status")
+    ngx.print([[
+Dummy API
+=========
+The following request headers and query parameters will make an impact on the response.
+
+Delay
+-----
+header-delay = {float}       Delay to first header byte
+body-delay = {float}         Delay to first body byte
+
+Cache-control
+-------------
+max-age = {int}              Set the response max-age value
+s-maxage = {int}             Set the response s-maxage value
+must-revalidate              Set must-revalidate
+public                       Set public
+private                      Set private
+no-store                     Set no-store
+no-cache                     Set no-cache
+no-transform                 Set no-transform
+
+Misc
+----
+content-length               Set the content-length header, otherwise chunked transfer encoding is used
+random-content = {int}       Add random string to the response of given length
+predictable-content = {int}  Add predictable string to the response of given length
+response-status = {int}      Set the response status
+]])
     ngx.exit(200)
 end
 
@@ -299,6 +300,6 @@ if body_delay then
 end
 
 -- Print body
-ngx.say(raw_body)
+ngx.print(raw_body)
 
 ok, err = ngx.eof()
