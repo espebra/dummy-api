@@ -5,23 +5,22 @@
 #       /etc/rc.d/init.d/
 #
 
-export PATH="$PATH:/srv/dummy-api/openresty/nginx/sbin"
-export LD_LIBRARY_PATH="/srv/dummy-api/openresty/luajit/lib/:$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="/srv/dummy-api/openresty/lualib/:$LD_LIBRARY_PATH"
-export LUA_PATH="/srv/dummy-api/lib/?.lua;/srv/dummy-api/?.lua"
+export PATH="$PATH:/usr/local/bin"
 
 start() {
         echo "Starting"
-        nohup nginx -p /srv/dummy-api/ -c /srv/dummy-api/conf/nginx.conf > /var/log/dummy-api/nohub.log
-
-        # To get the timers started
-        GET http://localhost/ 2>&1 > /dev/null
+        if [ ! -e "/srv/dummy-api/dummy-api" ]; then
+            cd /srv/dummy-api
+            go build dummy-api.go
+            chmod 555 /srv/dummy-api/dummy-api
+        fi
+        nohup /srv/dummy-api/dummy-api -host=0.0.0.0 -port=80 > /var/log/dummy-api/nohub.log
         return
 }
 
 stop() {
         echo "Shutting down"
-        killall -u dummy-api nginx
+        killall -u dummy-api dummy-api
         return
 }
 
@@ -33,7 +32,7 @@ case "$1" in
         stop
         ;;
     status)
-        pgrep nginx -u dummy-api
+        pgrep dummy-api -u dummy-api
         if [ $? -eq 0 ]; then
             exit 0
         else

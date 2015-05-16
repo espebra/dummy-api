@@ -26,6 +26,7 @@ The following request headers and query parameters will make an impact on the re
 
 ### Misc
 
+    connection=close                 Add connection=close response header
     content-length                   Set the content-length header, otherwise chunked transfer encoding is used
     random-content = {int}           Add random string to the response of given length
     predictable-content = {int}      Add predictable string to the response of given length
@@ -59,14 +60,12 @@ The following request headers and query parameters will make an impact on the re
 
 ## Installation
 
-    wget http://openresty.org/download/ngx_openresty-1.7.10.1.tar.gz
-    tar -xvzf ngx_openresty-1.7.10.1.tar.gz
-    cd ngx_openresty-1.7.10.1
-    ./configure --with-pcre-jit --with-luajit --error-log-path=/var/log/dummy-api/error.log --http-log-path=/var/log/dummy-api/access.log --prefix=/srv/dummy-api/openresty/
-    gmake
-    gmake install 
-    mkdir -p /srv/dummy-api/conf
-    cp etc/dummy-api.init /etc/init.d/dummy-api
-    cp etc/nginx.conf /srv/dummy-api/conf/
-    service dummy-api start
+    yum install golang
+    go build dummy-api.go
+    chmod +x dummy-api
+    ./dummy-api
+
+## Daemon options
+
+    ./dummy-api -help
 
