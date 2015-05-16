@@ -14,7 +14,7 @@ start() {
             go build dummy-api.go
             chmod 555 /srv/dummy-api/dummy-api
         fi
-        nohup /srv/dummy-api/dummy-api -host=0.0.0.0 -port=80 > /var/log/dummy-api/nohub.log
+        nohup /srv/dummy-api/dummy-api -host=0.0.0.0 -port=80 &
         return
 }
 
