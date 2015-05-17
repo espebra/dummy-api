@@ -15,6 +15,7 @@ import (
 )
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
+var verbose bool
 
 func main() {
     var default_host = "127.0.0.1"
@@ -37,6 +38,7 @@ func main() {
          "Write timeout in seconds")
     flag.IntVar(&maxheaderbytes, "maxheaderbytes", default_maxheaderbytes,
          "Max header bytes.")
+    flag.BoolVar(&verbose, "verbose", false, "Verbose stdout.")
     
     flag.Parse()
     
@@ -69,6 +71,14 @@ func main() {
     }
     
     mux = make(map[string]func(http.ResponseWriter, *http.Request))
+
+    if verbose {
+        fmt.Println("Host: " + host)
+        fmt.Println("Port: " + strconv.Itoa(port))
+        fmt.Println("Read timeout: " + strconv.Itoa(readtimeout) + " seconds")
+        fmt.Println("Write timeout: " + strconv.Itoa(writetimeout) + " seconds")
+        fmt.Println("Max header bytes: " + strconv.Itoa(maxheaderbytes))
+    }
     
     log.Fatal(server.ListenAndServe())
 }
@@ -144,10 +154,6 @@ func process(w http.ResponseWriter, r *http.Request) {
     var body_delay = 0
     var response_status = 200
     var content_length = false
-    //var random_content_length = 0
-    //var random_content = ""
-    //var predictable_content_length = 0
-    //var predictable_content = ""
     var connection = ""
     cache_control := []string{}
 
@@ -290,6 +296,10 @@ func process(w http.ResponseWriter, r *http.Request) {
         i, err := strconv.Atoi(value)
         if err == nil {
             if i > 0 {
+                if verbose {
+                    fmt.Println(r.RemoteAddr +
+                        " - random-content: " + strconv.Itoa(i) + " chars")
+                }
                 var seed = time.Now().UTC().UnixNano()
                 resp["random-content"] = generate_string(i, seed)
             }
@@ -302,6 +312,10 @@ func process(w http.ResponseWriter, r *http.Request) {
         i, err := strconv.Atoi(value)
         if err == nil {
             if i > 0 {
+                if verbose {
+                    fmt.Println(r.RemoteAddr +
+                        " - predictable-content: " + strconv.Itoa(i) + " chars")
+                }
                 var seed = int64(len(r.Method + r.Host + r.RequestURI))
                 resp["predictable-content"] = generate_string(i, seed)
             }
@@ -315,6 +329,10 @@ func process(w http.ResponseWriter, r *http.Request) {
 
     if header_delay > 0 {
         // Flush is not necessary
+        if verbose {
+            fmt.Println(r.RemoteAddr +
+                " - header-delay: " + strconv.Itoa(header_delay) + " ms")
+        }
         time.Sleep(time.Duration(header_delay) * time.Millisecond)
     }
 
@@ -322,20 +340,42 @@ func process(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Server", "Dummy API")
 
     if content_length {
-        w.Header().Set("Content-Length", strconv.Itoa(len(string(content))))
+        var v = strconv.Itoa(len(string(content)))
+        if verbose {
+            fmt.Println(r.RemoteAddr +
+                " - content-length: " + v + " bytes")
+        }
+        w.Header().Set("Content-Length", v)
     }
 
     if connection != "" {
+        if verbose {
+            fmt.Println(r.RemoteAddr +
+                " - connection: " + connection)
+        }
         w.Header().Set("Connection", connection)
     }
 
     if len(cache_control) > 0 {
-        w.Header().Set("Cache-control", strings.Join(cache_control, ", "))
+        var v = strings.Join(cache_control, ", ")
+        if verbose {
+            fmt.Println(r.RemoteAddr +
+                " - cache-control: " + v)
+        }
+        w.Header().Set("Cache-control", v)
     }
 
+    if verbose {
+        fmt.Println(r.RemoteAddr +
+            " - response-status: " + strconv.Itoa(response_status))
+    }
     w.WriteHeader(response_status)
 
     if body_delay > 0 {
+        if verbose {
+            fmt.Println(r.RemoteAddr +
+                " - body-delay: " + strconv.Itoa(body_delay) + " ms")
+        }
         if f, ok := w.(http.Flusher); ok {
             f.Flush()
         } else {
@@ -353,6 +393,15 @@ func (*myHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     u, err := url.Parse(r.RequestURI)
     if err != nil {
         panic(err)
+    }
+
+    if verbose {
+        t := time.Now().Local()
+        const layout = "2/Jan/2006:15:04:05 -0700"
+        fmt.Println(r.RemoteAddr + " -> " + r.Host + " " + 
+            "[" + t.UTC().Format(layout) + "] " + 
+            "\"" + r.Method + " " + r.RequestURI + "\" " + 
+            r.Proto)
     }
     
     params, _ := url.ParseQuery(u.RawQuery)
