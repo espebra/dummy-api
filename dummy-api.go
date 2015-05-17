@@ -171,7 +171,7 @@ func process(w http.ResponseWriter, r *http.Request) {
     if set  {
         i, err := strconv.Atoi(value)
         if err == nil {
-            if i > 0 && i < 300 {
+            if i > 0 && i < 300000 {
                 header_delay = i
                 resp[arg] = value
             }
@@ -183,7 +183,7 @@ func process(w http.ResponseWriter, r *http.Request) {
     if set  {
         i, err := strconv.Atoi(value)
         if err == nil {
-            if i > 0 && i < 300 {
+            if i > 0 && i < 300000 {
                 body_delay = i
                 resp[arg] = value
             }
