@@ -10,8 +10,8 @@ The following request headers and query parameters will make an impact on the re
 
 ### Delay
 
-    header-delay = {float}           Delay to first header byte
-    body-delay = {float}             Delay to first body byte
+    header-delay = {int}             Delay in ms to first header byte
+    body-delay = {int}               Delay in ms to first body byte
 
 ### Cache-control
 
