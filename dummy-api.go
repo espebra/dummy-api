@@ -57,7 +57,7 @@ func main() {
         fmt.Println("Invalid write timeout, using default.")
     }
 
-    if maxheaderbytes < 1 || maxheaderbytes > 2 << 40 {
+    if maxheaderbytes < 1 {
         maxheaderbytes = default_maxheaderbytes
         fmt.Println("Invalid max header bytes, using default.")
     }
@@ -144,7 +144,7 @@ Misc
 ----
 X-Parent=value             Set the X-Parent response header.
 X-Trace=value              Set the X-Trace response header.
-X-Debug={int}              Set the X-Debug response header.
+X-Debug=value              Set the X-Debug response header.
 content-length             Set the content-length header, otherwise chunked
                            transfer encoding is used.
 random-content={int}       Add random string to the response of given length.
