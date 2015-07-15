@@ -26,6 +26,9 @@ The following request headers and query parameters will make an impact on the re
 
 ### Misc
 
+    x-parent=value                   Add the X-Parent response header
+    x-trace=value                    Add the X-Trace response header
+    x-debug=value                    Add the X-Debug response header
     connection=close                 Add connection=close response header
     content-length                   Set the content-length header, otherwise chunked transfer encoding is used
     random-content = {int}           Add random string to the response of given length
