@@ -84,13 +84,18 @@ func main() {
 }
 
 func get_property(params url.Values, headers http.Header, key string) (bool, string) {
-    if values, ok := params[key]; ok {
-        for _, value := range values {
-            return true, value
+    key = strings.ToLower(key)
+    for param, values := range params {
+        param = strings.ToLower(param)
+        if param == key {
+            for _, value := range values {
+                return true, value
+            }
         }
     }
 
     for header, values := range headers {
+        header = strings.ToLower(header)
         if http.CanonicalHeaderKey(header) == http.CanonicalHeaderKey(key) {
             for _, value := range values {
                 return true, value
@@ -121,29 +126,32 @@ The following request headers and query parameters will make an impact on the re
 
 Delay
 -----
-header-delay = {int}         Delay to first header byte in ms.
-body-delay = {int}           Delay to first body byte in ms.
+header-delay={int}         Delay to first header byte in ms.
+body-delay={int}           Delay to first body byte in ms.
 
 Cache-control
 -------------
-max-age = {int}              Set the cache-control max-age value.
-s-maxage = {int}             Set the cache-control s-maxage value.
-must-revalidate              Set cache-control must-revalidate.
-public                       Set cache-control public.
-private                      Set cache-control private.
-no-store                     Set cache-control no-store.
-no-cache                     Set cache-control no-cache.
-no-transform                 Set cache-control no-transform.
+max-age={int}              Set the cache-control max-age value.
+s-maxage={int}             Set the cache-control s-maxage value.
+must-revalidate            Set cache-control must-revalidate.
+public                     Set cache-control public.
+private                    Set cache-control private.
+no-store                   Set cache-control no-store.
+no-cache                   Set cache-control no-cache.
+no-transform               Set cache-control no-transform.
 
 Misc
 ----
-content-length               Set the content-length header, otherwise chunked
-                             transfer encoding is used.
-random-content = {int}       Add random string to the response of given length.
-predictable-content = {int}  Add predictable string to the response of given
-                             length.
-connection=close             Add connection=close to the response headers.
-response-status = {int}      Set the response status.`
+X-Parent=value             Set the X-Parent response header.
+X-Trace=value              Set the X-Trace response header.
+X-Debug={int}              Set the X-Debug response header.
+content-length             Set the content-length header, otherwise chunked
+                           transfer encoding is used.
+random-content={int}       Add random string to the response of given length.
+predictable-content={int}  Add predictable string to the response of given
+                           length.
+connection=close           Add connection=close to the response headers.
+response-status={int}      Set the response status.`
 
     io.WriteString(w, help)
 }
@@ -154,6 +162,9 @@ func process(w http.ResponseWriter, r *http.Request) {
     var body_delay = 0
     var response_status = 200
     var content_length = false
+    var x_debug = ""
+    var x_parent = ""
+    var x_trace = ""
     var connection = ""
     cache_control := []string{}
 
@@ -278,6 +289,24 @@ func process(w http.ResponseWriter, r *http.Request) {
         }
     }
 
+    arg = "x-trace"
+    set, value = get_property(params, headers, arg)
+    if set  {
+        x_trace = value
+    }
+
+    arg = "x-parent"
+    set, value = get_property(params, headers, arg)
+    if set  {
+        x_parent = value
+    }
+
+    arg = "x-debug"
+    set, value = get_property(params, headers, arg)
+    if set  {
+        x_debug = value
+    }
+
     arg = "response-status"
     set, value = get_property(params, headers, arg)
     if set {
@@ -338,6 +367,18 @@ func process(w http.ResponseWriter, r *http.Request) {
 
     w.Header().Set("Content-Type", "application/json")
     w.Header().Set("Server", "Dummy API")
+
+    if x_trace != ""{
+        w.Header().Set("X-Trace", x_trace)
+    }
+
+    if x_parent != "" {
+        w.Header().Set("X-Parent", x_parent)
+    }
+
+    if x_debug != "" {
+        w.Header().Set("X-Debug", x_debug)
+    }
 
     if content_length {
         var v = strconv.Itoa(len(string(content)))
