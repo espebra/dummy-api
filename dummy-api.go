@@ -23,12 +23,18 @@ func main() {
     var default_readtimeout = 10
     var default_writetimeout = 10
     var default_maxheaderbytes = 1 << 20 // 1 MB
+    var default_enableTLS = false
+    var default_cert_file = ""
+    var default_key_file = ""
     
     var host string
     var port int
     var readtimeout int
     var writetimeout int
     var maxheaderbytes int
+    var enableTLS bool
+    var certFile string
+    var keyFile string
 
     flag.StringVar(&host, "host", default_host, "Listen host")
     flag.IntVar(&port, "port", default_port, "Listen port")
@@ -38,6 +44,9 @@ func main() {
          "Write timeout in seconds")
     flag.IntVar(&maxheaderbytes, "maxheaderbytes", default_maxheaderbytes,
          "Max header bytes.")
+    flag.BoolVar(&enableTLS, "tls", default_enableTLS, "Verbose stdout.")
+    flag.StringVar(&certFile, "cert-file", default_cert_file, "Certificate file")
+    flag.StringVar(&keyFile, "key-file", default_key_file, "Certificate key file")
     flag.BoolVar(&verbose, "verbose", false, "Verbose stdout.")
     
     flag.Parse()
@@ -61,6 +70,16 @@ func main() {
         maxheaderbytes = default_maxheaderbytes
         fmt.Println("Invalid max header bytes, using default.")
     }
+
+    if enableTLS {
+        fmt.Println("TLS is enabled")
+        if (certFile == "") {
+            log.Fatal("Certificate file is not specified.")
+        }
+        if (keyFile == "") {
+            log.Fatal("Key file is not specified.")
+        }
+    }
     
     server := http.Server{
         Addr: host + ":" + strconv.Itoa(port),
@@ -80,7 +99,11 @@ func main() {
         fmt.Println("Max header bytes: " + strconv.Itoa(maxheaderbytes))
     }
     
-    log.Fatal(server.ListenAndServe())
+    if enableTLS {
+        log.Fatal(server.ListenAndServeTLS(certFile, keyFile))
+    } else {
+        log.Fatal(server.ListenAndServe())
+    }
 }
 
 func get_property(params url.Values, headers http.Header, key string) (bool, string) {
