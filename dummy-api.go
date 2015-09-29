@@ -36,17 +36,17 @@ func main() {
     var certFile string
     var keyFile string
 
-    flag.StringVar(&host, "host", default_host, "Listen host")
-    flag.IntVar(&port, "port", default_port, "Listen port")
+    flag.StringVar(&host, "host", default_host, "Listen host.")
+    flag.IntVar(&port, "port", default_port, "Listen port.")
     flag.IntVar(&readtimeout, "readtimeout", default_readtimeout,
-        "Read timeout in seconds")
+        "Read timeout in seconds.")
     flag.IntVar(&writetimeout, "writetimeout", default_writetimeout,
-         "Write timeout in seconds")
+         "Write timeout in seconds.")
     flag.IntVar(&maxheaderbytes, "maxheaderbytes", default_maxheaderbytes,
          "Max header bytes.")
-    flag.BoolVar(&enableTLS, "tls", default_enableTLS, "Verbose stdout.")
-    flag.StringVar(&certFile, "cert-file", default_cert_file, "Certificate file")
-    flag.StringVar(&keyFile, "key-file", default_key_file, "Certificate key file")
+    flag.BoolVar(&enableTLS, "tls", default_enableTLS, "Enable TLS.")
+    flag.StringVar(&certFile, "cert-file", default_cert_file, "Certificate file.")
+    flag.StringVar(&keyFile, "key-file", default_key_file, "Certificate key file.")
     flag.BoolVar(&verbose, "verbose", false, "Verbose stdout.")
     
     flag.Parse()
@@ -72,7 +72,6 @@ func main() {
     }
 
     if enableTLS {
-        fmt.Println("TLS is enabled")
         if (certFile == "") {
             log.Fatal("Certificate file is not specified.")
         }
@@ -97,6 +96,9 @@ func main() {
         fmt.Println("Read timeout: " + strconv.Itoa(readtimeout) + " seconds")
         fmt.Println("Write timeout: " + strconv.Itoa(writetimeout) + " seconds")
         fmt.Println("Max header bytes: " + strconv.Itoa(maxheaderbytes))
+        if enableTLS {
+            fmt.Println("TLS: enabled")
+        }
     }
     
     if enableTLS {

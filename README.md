@@ -71,12 +71,12 @@ The following request headers and query parameters will make an impact on the re
 ## Daemon options
 
     ./dummy-api -help
-      -cert-file="": Certificate file
-      -host="127.0.0.1": Listen host
-      -key-file="": Certificate key file
+      -cert-file="": Certificate file.
+      -host="127.0.0.1": Listen host.
+      -key-file="": Certificate key file.
       -maxheaderbytes=1048576: Max header bytes.
-      -port=1337: Listen port
-      -readtimeout=10: Read timeout in seconds
-      -tls=false: Verbose stdout.
+      -port=1337: Listen port.
+      -readtimeout=10: Read timeout in seconds.
+      -tls=false: Enable TLS.
       -verbose=false: Verbose stdout.
-      -writetimeout=10: Write timeout in seconds
+      -writetimeout=10: Write timeout in seconds.
