@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"bytes"
 	"io"
 	"net/url"
 	"net/http"
@@ -431,10 +432,19 @@ func process(w http.ResponseWriter, r *http.Request) {
         w.Header().Set("Cache-control", v)
     }
 
+    if verbose && r.Method == "POST" {
+        buf := new(bytes.Buffer)
+        buf.ReadFrom(r.Body)
+        s := buf.String()
+        fmt.Println(r.RemoteAddr +
+            " - request-body: " + s)
+    }
+
     if verbose {
         fmt.Println(r.RemoteAddr +
             " - response-status: " + strconv.Itoa(response_status))
     }
+
     w.WriteHeader(response_status)
 
     if body_delay > 0 {
