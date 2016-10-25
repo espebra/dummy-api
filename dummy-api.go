@@ -17,6 +17,7 @@ import (
 
 var mux map[string]func(http.ResponseWriter, *http.Request)
 var verbose bool
+var reqcounter = 0
 
 func main() {
 	var default_host = "127.0.0.1"
@@ -208,6 +209,17 @@ func process(w http.ResponseWriter, r *http.Request) {
 
 	params, _ := url.ParseQuery(u.RawQuery)
 	var headers = r.Header
+
+	if resp["path"] == "/x-dumpdummyapistatistics" {
+		w.Header().Set("X-Request-Counter", strconv.Itoa(reqcounter))
+	} else {
+		reqcounter++
+	}
+
+	if resp["path"] == "/x-resetdummyapistatistics" {
+		reqcounter = 0
+		w.Header().Set("X-Request-Counter", strconv.Itoa(reqcounter))
+	}
 
 	arg := "header-delay"
 	set, value := get_property(params, headers, arg)
