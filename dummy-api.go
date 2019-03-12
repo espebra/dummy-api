@@ -351,6 +351,10 @@ func process(w http.ResponseWriter, r *http.Request) {
 		i, err := strconv.Atoi(value)
 		if err == nil {
 			if i > 0 {
+				
+				if i > 10000 {
+				    	i = 10000
+				}
 				if verbose {
 					fmt.Println(r.RemoteAddr +
 						" - random-content: " + strconv.Itoa(i) + " chars")
@@ -367,6 +371,10 @@ func process(w http.ResponseWriter, r *http.Request) {
 		i, err := strconv.Atoi(value)
 		if err == nil {
 			if i > 0 {
+				
+				if i > 10000 {
+				    	i = 10000
+				}
 				if verbose {
 					fmt.Println(r.RemoteAddr +
 						" - predictable-content: " + strconv.Itoa(i) + " chars")
